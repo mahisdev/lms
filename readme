@@ -1,0 +1,6 @@
+stack1.yml ---> is created for two ec2 instances from my customized AMI which is alredy having Tomcat7 and apache, bring two instances                into load balancing for workload sharing
+warfile.yml ---> This is for check war file existance and copy it into ec2 instances and move original file to s3 bucket
+zipfile.yml ---> This is for check zip file existance and copy it into ec2 instances and uzip
+hosts: Servers list where ansible deploying the code
+Batter approach: add warfile.yml and zipfile.yml in post build script in jenkin jobs.
+Assumptions: Jenkin machine or Jenkin slave is my ansible master
