@@ -1,0 +1,12 @@
+---
+#Variable declarations
+project_name: Life_insu
+aws_region: us-east-1
+instance_type: t2.micro
+image: ami-04eb6cc3c82cdb529
+bucket_name: warefileland
+key: virg
+Tomcat_path: "/var/lib/tomcat7/webapps/"
+warfile_path: "/var/lib/jenkins/jobs/health_ins/workspace/target/health_ins_v5.war"
+zipfile_path: "/var/lib/jenkins/jobs/health_ins/workspace/target/health_ins.zip"
+apache_path: "/usr/bin/apache/"
