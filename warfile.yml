@@ -1,0 +1,19 @@
+---
+# Keep on checking WAR file generated or not
+# If WAR file availble copy it to tomcat servers
+# move the war file to s3
+- name: Copy war file to webserver
+  hosts: appserver 
+  vars_files:
+    - file.yml
+  tasks:
+    - name:Is war file exists
+    - stat: path= "{{warfile_path}}"
+      register: warfile
+
+    - name: if .war file exists copy it to webserver
+      notify: restart tomcat
+      command: aws s3 mv {{warfile_path}} s3://{{bucket_name}}
+      copy: src="{{warfile_path}}" dest="{{Tomcat_path}}" mode=0777
+      when: warfile.stat.exists == True
+

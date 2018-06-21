@@ -1,0 +1,79 @@
+---
+# Creating ec2 instances and adding those to ELB for application high availability
+- name: Create AWS instances
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - file.yml 
+  tasks:
+    - name: Security Group Create
+      ec2_group: 
+        name: "{{project_name}}_sec_group"
+        description: "{{project_name}} Security group"
+        region: "{{ aws_region }}"
+        rules: 
+          - proto: tcp
+            type: ssh
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            type: http
+            from_port: 80
+            to_port: 80
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            type: https
+            from_port: 443
+            to_port: 443
+            cidr_ip: 0.0.0.0/0
+        rules_egress:
+          - proto: all
+            type: all
+            cidr_ip: 0.0.0.0/0
+      register: sec_group
+
+    - name: Spin two ec2 instances 
+      ec2:
+        key_name: "{{key}}"
+        group_id: "{{sec_group.group_id}}" 
+        region: "{{ aws_region }}"
+        instance_type: "{{instance_type}}" 
+        image: "{{image}}"
+        wait: yes
+        instance_tags: 
+          app: web-app
+        count_tag: app
+        exact_count: 2
+      register: ec2
+
+    - name: Create Load balancer
+      local_action:
+        module: ec2_elb_lb 
+        name: "{{project_name}}-ELB"
+        state: present
+        region: "{{ aws_region }}"
+        zones:
+            - us-east-1a
+            - us-east-1c
+        security_group_ids: "{{sec_group.group_id}}"
+        listners: 
+            - protocol: http
+              load_balancer_port: 80
+              instance_port: 8080
+            - protocol: https
+              load_balancer_port: 443 
+              instance_port: 80
+              ssl_certificate_id: "arn:aws:iam::123456789012:server-certificate/company/servercerts/ProdServerCert"
+      register: elb
+
+    - name: add the servers to load balancer
+      local_action: ec2_elb
+      args: 
+        instance_id: "{{item.id }}"
+        ec2_elbs: "{{project_name}}-ELB"
+        state: present
+        region: "{{ aws_region }}"
+      with_items: ec2.tagged_instances
+

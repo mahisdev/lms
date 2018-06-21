@@ -1,0 +1,17 @@
+---
+# Check Zip file is available 
+# If available move it to destination server 
+# unzip it
+- name: Copy war file to webserver
+  hosts: webserver  
+  vars_files:
+    - file.yml
+  tasks:
+    - name:Is zip file exists
+    - stat: path="{{zipfile_path}}"
+      register: zipfile
+
+    - name: if zip file exists copy it to webserver
+      notify: apache restart
+      unarchive: src="{{zipfile_path}}" dest="{{apache_path}}" mode=0777 remote_src=yes
+      when: zipfile.stat.exists == True
