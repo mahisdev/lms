@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 stack1.yml ---> This script will create simple ec2 instances under defaulty VPC, adding two instances into load balancing for workload sharing, I used my customized AMI which is having tomcat7 and apache
 warfile.yml ---> This is for check war file existance and copy it into ec2 instances and move original file to s3 bucket
+=======
+stack1.yml ---> is created for two ec2 instances from my customized AMI which is alredy having Tomcat7 and apache, bring two instances                into load balancing for workload sharing
+warfile.yml ---> This is for check war file existance and copy it into ec2 instances and move original file to s3 bucket, tomcat will take my war file
+>>>>>>> ecee210f97e22a8929344cd65f19732bf7a00ffa
 zipfile.yml ---> This is for check zip file existance and copy it into ec2 instances and uzip
 file.yml: variables are mentioned in this file. 
 hosts: Servers list where ansible deploying the code
-Batter approach: add warfile.yml and zipfile.yml in post build script in jenkin jobs.
+Batter approach: add warfile.yml and zipfile.yml in post build script in jenkin jobs. 
 Assumptions: Jenkin machine or Jenkin slave is my ansible master
